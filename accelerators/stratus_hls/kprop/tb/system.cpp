@@ -91,9 +91,9 @@ void system_t::load_memory()
     //  ===========================  ^
     //  |  weights1     (double)  |  | input_dimension * nodes_per_layer 
     //  ===========================  -
-    //  |  weights1     (double)  |  | nodes_per_layer * nodes_per_layer
+    //  |  weights2     (double)  |  | nodes_per_layer * nodes_per_layer
     //  ===========================  -
-    //  |  weights1     (double)  |  | nodes_per_layer * possible_outputs
+    //  |  weights3     (double)  |  | nodes_per_layer * possible_outputs
     //  ===========================  -
     //  |  biases1      (double)  |  | nodes_per_layer
     //  ===========================  -
