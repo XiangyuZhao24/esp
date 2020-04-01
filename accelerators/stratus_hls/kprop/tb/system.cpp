@@ -98,11 +98,11 @@ void system_t::load_memory()
     //  |  biases1      (double)  |  | nodes_per_layer
     //  ===========================  -
     //  |  biases2      (double)  |  | nodes_per_layer
-	//  ===========================  -
+    //  ===========================  -
     //  |  biases3      (double)  |  | possible_outputs
-	//  ===========================  -
+    //  ===========================  -
     //  |  training_data(double)  |  | training_sets * input_dimension
-	//  ===========================  -
+    //  ===========================  -
     //  | training_targets(double)|  | training_sets * possible_outputs	
     //  ===========================  v
 	
@@ -148,7 +148,6 @@ void system_t::load_memory()
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
     for (i = 0; i < weights2_addr; i++) {
-
     	float val;
     	fscanf(fp, "%f\n", &val);
         in[i] = val;
@@ -160,7 +159,6 @@ void system_t::load_memory()
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < weights3_addr; i++) {
-
     	float val;
     	fscanf(fp, "%f\n", &val);
 	in[i] = val;
@@ -172,7 +170,6 @@ void system_t::load_memory()
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < biases1_addr; i++) {
-
     	float val;
     	fscanf(fp, "%f\n", &val);
 	in[i] = val;
@@ -184,7 +181,6 @@ void system_t::load_memory()
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < biases1_addr; i++) {
-
     	float val;
     	fscanf(fp, "%f\n", &val);
 	in[i] = val;
@@ -196,7 +192,6 @@ void system_t::load_memory()
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < biases2_addr; i++) {
-
     	float val;
     	fscanf(fp, "%f\n", &val);
 	in[i] = val;
@@ -208,7 +203,6 @@ void system_t::load_memory()
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < training_data_addr; i++) {
-
     	float val;
     	fscanf(fp, "%f\n", &val);
 	in[i] = val;
@@ -220,7 +214,6 @@ void system_t::load_memory()
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < training_targets_addr; i++) {
-
     	float val;
     	fscanf(fp, "%f\n", &val);
 	in[i] = val;
@@ -232,7 +225,6 @@ void system_t::load_memory()
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < in_size; i++) {
-
     	float val;
     	fscanf(fp, "%f\n", &val);
 	in[i] = val;
