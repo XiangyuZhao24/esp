@@ -4,6 +4,7 @@
 #ifndef __KPROP_HPP__
 #define __KPROP_HPP__
 
+#include "fpdata.hpp"
 #include "kprop_conf_info.hpp"
 #include "kprop_debug_info.hpp"
 
