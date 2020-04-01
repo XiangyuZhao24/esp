@@ -117,8 +117,9 @@ void system_t::load_memory()
     	ESP_REPORT_INFO("cannot open check file.");
     	return;
     }	
-	//Memory position
-	weights1_addr = 0;	
+    
+    //Memory position
+    weights1_addr = 0;	
     weights2_addr = input_dimension * nodes_per_layer;	
     weights3_addr = weights2_addr + nodes_per_layer * nodes_per_layer;	
     biases1_addr = weights3_addr + nodes_per_layer * possible_outputs;	
@@ -140,103 +141,103 @@ void system_t::load_memory()
     in_size = in_words_adj * (1);
     out_size = out_words_adj * (1);
 	
-	//Load input_data (in) and golden output (gold)
+    //Load input_data (in) and golden output (gold)
     in = new float[in_size];
     gold = new float[out_size];
-	//weight1
-	fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
-	fscanf(fp_gold, "%s\n", str_tmp);
+    //weight1
+    fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
+    fscanf(fp_gold, "%s\n", str_tmp);
     for (i = 0; i < weights2_addr; i++) {
 
     	float val;
     	fscanf(fp, "%f\n", &val);
-		in[i] = val;
-		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-		fscanf(fp_gold, "%f\n", &val);
+        in[i] = val;
+	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+	fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
-	//weight2
-	fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
-	fscanf(fp_gold, "%s\n", str_tmp);
+    //weight2
+    fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
+    fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < weights3_addr; i++) {
 
     	float val;
     	fscanf(fp, "%f\n", &val);
-		in[i] = val;
-		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-		fscanf(fp_gold, "%f\n", &val);
+	in[i] = val;
+	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+	fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
-	//weight3
-	fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
-	fscanf(fp_gold, "%s\n", str_tmp);
+    //weight3
+    fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
+    fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < biases1_addr; i++) {
 
     	float val;
     	fscanf(fp, "%f\n", &val);
-		in[i] = val;
-		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-		fscanf(fp_gold, "%f\n", &val);
+	in[i] = val;
+	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+	fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
-	//biases1
-	fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
-	fscanf(fp_gold, "%s\n", str_tmp);
+    //biases1
+    fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
+    fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < biases1_addr; i++) {
 
     	float val;
     	fscanf(fp, "%f\n", &val);
-		in[i] = val;
-		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-		fscanf(fp_gold, "%f\n", &val);
+	in[i] = val;
+	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+	fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }	
-	//biases2
-	fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
-	fscanf(fp_gold, "%s\n", str_tmp);
+    //biases2
+    fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
+    fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < biases2_addr; i++) {
 
     	float val;
     	fscanf(fp, "%f\n", &val);
-		in[i] = val;
-		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-		fscanf(fp_gold, "%f\n", &val);
+	in[i] = val;
+	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+	fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
-	//biases3
-	fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
-	fscanf(fp_gold, "%s\n", str_tmp);
+    //biases3
+    fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
+    fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < training_data_addr; i++) {
 
     	float val;
     	fscanf(fp, "%f\n", &val);
-		in[i] = val;
-		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-		fscanf(fp_gold, "%f\n", &val);
+	in[i] = val;
+	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+	fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
-	//training_data
-	fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
-	fscanf(fp_gold, "%s\n", str_tmp);
+    //training_data
+    fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
+    fscanf(fp_gold, "%s\n", str_tmp);
     for (; i < training_targets_addr; i++) {
 
     	float val;
     	fscanf(fp, "%f\n", &val);
-		in[i] = val;
-		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-		fscanf(fp_gold, "%f\n", &val);
+	in[i] = val;
+	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+	fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }	
-	//training_targets
-	fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
-	fscanf(fp_gold, "%s\n", str_tmp);
-    for (; i < out_size; i++) {
+    //training_targets
+    fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
+    fscanf(fp_gold, "%s\n", str_tmp);
+    for (; i < in_size; i++) {
 
     	float val;
     	fscanf(fp, "%f\n", &val);
-		in[i] = val;
-		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-		fscanf(fp_gold, "%f\n", &val);
+	in[i] = val;
+	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+	fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
 /*
