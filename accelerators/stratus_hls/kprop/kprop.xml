@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld>
+  <accelerator name="kprop" desc="Accelerator KPROP" data_size="4" device_id="024" hls_tool="stratus_hls">
+    <param name="training_sets" desc="training_sets" />
+    <param name="learning_rate" desc="learning_rate" />
+    <param name="possible_outputs" desc="possible_outputs" />
+    <param name="nodes_per_layer" desc="nodes_per_layer" />
+    <param name="input_dimension" desc="input_dimension" />
+  </accelerator>
+</sld>

@@ -1,0 +1,4 @@
+kprop_plm_block_in_dma32 7859 64 1w:0r 0w:1r
+kprop_plm_block_out_dma32 7859 64 1w:0r 0w:1r
+kprop_plm_block_in_dma64 7859 64 1w:0r 0w:1r
+kprop_plm_block_out_dma64 7859 64 1w:0r 0w:1r
