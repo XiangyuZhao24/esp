@@ -151,8 +151,8 @@ void system_t::load_memory()
     	float val;
     	fscanf(fp, "%f\n", &val);
         in[i] = val;
-	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-	fscanf(fp_gold, "%f\n", &val);
+		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
     //weight2
@@ -161,9 +161,9 @@ void system_t::load_memory()
     for (; i < weights3_addr; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
-	in[i] = val;
-	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-	fscanf(fp_gold, "%f\n", &val);
+		in[i] = val;
+		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
     //weight3
@@ -172,9 +172,9 @@ void system_t::load_memory()
     for (; i < biases1_addr; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
-	in[i] = val;
-	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-	fscanf(fp_gold, "%f\n", &val);
+		in[i] = val;
+		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
     //biases1
@@ -183,9 +183,9 @@ void system_t::load_memory()
     for (; i < biases1_addr; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
-	in[i] = val;
-	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-	fscanf(fp_gold, "%f\n", &val);
+		in[i] = val;
+		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }	
     //biases2
@@ -194,9 +194,9 @@ void system_t::load_memory()
     for (; i < biases2_addr; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
-	in[i] = val;
-	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-	fscanf(fp_gold, "%f\n", &val);
+		in[i] = val;
+		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
     //biases3
@@ -205,9 +205,9 @@ void system_t::load_memory()
     for (; i < training_data_addr; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
-	in[i] = val;
-	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-	fscanf(fp_gold, "%f\n", &val);
+		in[i] = val;
+		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
     //training_data
@@ -216,9 +216,9 @@ void system_t::load_memory()
     for (; i < training_targets_addr; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
-	in[i] = val;
-	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-	fscanf(fp_gold, "%f\n", &val);
+		in[i] = val;
+		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }	
     //training_targets
@@ -227,9 +227,9 @@ void system_t::load_memory()
     for (; i < in_size; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
-	in[i] = val;
-	mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
-	fscanf(fp_gold, "%f\n", &val);
+		in[i] = val;
+		mem[i] = fp2bv<FPDATA, WORD_SIZE>((FPDATA) val); // FPDATA -> sc_bv and store it
+		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
 /*

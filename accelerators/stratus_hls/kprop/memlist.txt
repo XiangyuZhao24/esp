@@ -1,4 +1,14 @@
-kprop_plm_block_in_dma32 7859 64 1w:0r 0w:1r
-kprop_plm_block_out_dma32 7859 64 1w:0r 0w:1r
+#kprop_plm_block_in_dma32 7859 64 1w:0r 0w:1r
+#kprop_plm_block_out_dma32 7859 64 1w:0r 0w:1r
 kprop_plm_block_in_dma64 7859 64 1w:0r 0w:1r
 kprop_plm_block_out_dma64 7859 64 1w:0r 0w:1r
+kprop_plm_weights1_dma64 832 64 1w:0r 0w:1r
+kprop_plm_weights2_dma64 4096 64 1w:0r 0w:1r
+kprop_plm_weights3_dma64 192 64 1w:0r 0w:1r
+kprop_plm_biases1_dma64 64 64 1w:0r 0w:1r
+kprop_plm_biases2_dma64 64 64 1w:0r 0w:1r
+kprop_plm_biases3_dma64 3 64 1w:0r 0w:1r
+kprop_plm_training_data_dma64 2119 64 1w:0r 0w:1r
+kprop_plm_training_targets_dma64 489 64 1w:0r 0w:1r
+
+

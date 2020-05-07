@@ -33,6 +33,16 @@ void kprop::load_input()
     int32_t possible_outputs;
     int32_t learning_rate;
     int32_t training_sets;
+	int32_t index_weights1;
+	int32_t index_weights2;
+	int32_t index_weights3;
+	int32_t index_biases1;
+	int32_t index_biases2;
+	int32_t index_biases3;
+	int32_t index_training_data;
+	int32_t index_training_targets;
+	
+	
     {
         HLS_PROTO("load-config");
 
@@ -46,9 +56,20 @@ void kprop::load_input()
         possible_outputs = config.possible_outputs;
         learning_rate = config.learning_rate;
         training_sets = config.training_sets;
+		
+		//length of each PLM
+		len_weights1 = input_dimension * nodes_per_layer;
+		len_weights2 = nodes_per_layer * nodes_per_layer;
+		len_weights3 = nodes_per_layer * possible_outputs;
+		len_biases1 = nodes_per_layer;
+		len_biases2 = nodes_per_layer;	
+		len_biases3 = possible_outputs;
+		len_training_data = training_sets * input_dimension;
+		len_training_targets = training_sets * possible_outputs;		
     }
 
     // Load
+	/*  Default load
     {
         HLS_PROTO("load-dma");
         wait();
@@ -126,7 +147,229 @@ void kprop::load_input()
             }
         }
     }
+	*/
 
+	// New Load
+    {
+        HLS_PROTO("load-dma");
+        wait();
+
+        bool ping = true;
+        uint32_t offset = 0;
+
+		wait();
+		
+		// load weights1 values		
+		{
+			HLS_PROTO("load-dma");
+			
+			dma_info_t dma_info(offset, len_weights1, DMA_SIZE);
+			offset += len_weights1;
+			this->dma_read_ctrl.put(dma_info);			
+		}
+		
+		for (uint16_t i = 0; i < len_weights1; i++)
+		{
+			HLS_BREAK_DEP(plm_weights1_ping);
+			HLS_BREAK_DEP(plm_weights1_pong);
+			
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			dataBv = this->dma_read_chnl.get();
+			wait();
+			
+			{
+			if (ping)
+				plm_weights1_ping[i] = dataBv.to_int64();
+			else
+				plm_weights1_pong[i] = dataBv.to_int64();
+			}			
+		}
+
+		// load weights2 values		
+		{
+			HLS_PROTO("load-dma");
+			
+			dma_info_t dma_info(offset, len_weights2, DMA_SIZE);
+			offset += len_weights2;
+			this->dma_read_ctrl.put(dma_info);			
+		}
+		
+		for (uint16_t i = 0; i < len_weights2; i++)
+		{
+			HLS_BREAK_DEP(plm_weights2_ping);
+			HLS_BREAK_DEP(plm_weights2_pong);
+			
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			dataBv = this->dma_read_chnl.get();
+			wait();
+			
+			{
+			if (ping)
+				plm_weights2_ping[i] = dataBv.to_int64();
+			else
+				plm_weights2_pong[i] = dataBv.to_int64();
+			}			
+		}
+
+		// load weights3 values		
+		{
+			HLS_PROTO("load-dma");
+			
+			dma_info_t dma_info(offset, len_weights3, DMA_SIZE);
+			offset += len_weights3;
+			this->dma_read_ctrl.put(dma_info);			
+		}
+		
+		for (uint16_t i = 0; i < len_weights3; i++)
+		{
+			HLS_BREAK_DEP(plm_weights3_ping);
+			HLS_BREAK_DEP(plm_weights3_pong);
+			
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			dataBv = this->dma_read_chnl.get();
+			wait();
+			
+			{
+			if (ping)
+				plm_weights3_ping[i] = dataBv.to_int64();
+			else
+				plm_weights3_pong[i] = dataBv.to_int64();
+			}			
+		}	
+
+		// load biases1 values		
+		{
+			HLS_PROTO("load-dma");
+			
+			dma_info_t dma_info(offset, len_biases1, DMA_SIZE);
+			offset += len_biases1;
+			this->dma_read_ctrl.put(dma_info);			
+		}
+		
+		for (uint16_t i = 0; i < len_biases1; i++)
+		{
+			HLS_BREAK_DEP(plm_biases1_ping);
+			HLS_BREAK_DEP(plm_biases1_pong);
+			
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			dataBv = this->dma_read_chnl.get();
+			wait();
+			
+			{
+			if (ping)
+				plm_biases1_ping[i] = dataBv.to_int64();
+			else
+				plm_biases1_pong[i] = dataBv.to_int64();
+			}			
+		}	
+
+		// load biases2 values		
+		{
+			HLS_PROTO("load-dma");
+			
+			dma_info_t dma_info(offset, len_biases2, DMA_SIZE);
+			offset += len_biases2;
+			this->dma_read_ctrl.put(dma_info);			
+		}
+		
+		for (uint16_t i = 0; i < len_biases2; i++)
+		{
+			HLS_BREAK_DEP(plm_biases2_ping);
+			HLS_BREAK_DEP(plm_biases2_pong);
+			
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			dataBv = this->dma_read_chnl.get();
+			wait();
+			
+			{
+			if (ping)
+				plm_biases2_ping[i] = dataBv.to_int64();
+			else
+				plm_biases2_pong[i] = dataBv.to_int64();
+			}			
+		}		
+		
+		// load biases3 values		
+		{
+			HLS_PROTO("load-dma");
+			
+			dma_info_t dma_info(offset, len_biases3, DMA_SIZE);
+			offset += len_biases3;
+			this->dma_read_ctrl.put(dma_info);			
+		}
+		
+		for (uint16_t i = 0; i < len_biases3; i++)
+		{
+			HLS_BREAK_DEP(plm_biases3_ping);
+			HLS_BREAK_DEP(plm_biases3_pong);
+			
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			dataBv = this->dma_read_chnl.get();
+			wait();
+			
+			{
+			if (ping)
+				plm_biases3_ping[i] = dataBv.to_int64();
+			else
+				plm_biases3_pong[i] = dataBv.to_int64();
+			}			
+		}
+
+		// load training data values		
+		{
+			HLS_PROTO("load-dma");
+			
+			dma_info_t dma_info(offset, len_training_data, DMA_SIZE);
+			offset += len_training_data;
+			this->dma_read_ctrl.put(dma_info);			
+		}
+		
+		for (uint16_t i = 0; i < len_training_data; i++)
+		{
+			HLS_BREAK_DEP(plm_training_data_ping);
+			HLS_BREAK_DEP(plm_training_data_pong);
+			
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			dataBv = this->dma_read_chnl.get();
+			wait();
+			
+			{
+			if (ping)
+				plm_training_data_ping[i] = dataBv.to_int64();
+			else
+				plm_training_data_pong[i] = dataBv.to_int64();
+			}			
+		}	
+
+		// load training targets values		
+		{
+			HLS_PROTO("load-dma");
+			
+			dma_info_t dma_info(offset, len_training_targets, DMA_SIZE);
+			offset += len_training_targets;
+			this->dma_read_ctrl.put(dma_info);			
+		}
+		
+		for (uint16_t i = 0; i < len_training_targets; i++)
+		{
+			HLS_BREAK_DEP(plm_training_targets_ping);
+			HLS_BREAK_DEP(plm_training_targets_pong);
+			
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			dataBv = this->dma_read_chnl.get();
+			wait();
+			
+			{
+			if (ping)
+				plm_training_targets_ping[i] = dataBv.to_int64();
+			else
+				plm_training_targets_pong[i] = dataBv.to_int64();
+			}			
+		}		
+
+		this->load_compute_handshake();
+		ping = !ping;
+    }	
     // Conclude
     {
         this->process_done();
@@ -170,9 +413,20 @@ void kprop::store_output()
         possible_outputs = config.possible_outputs;
         learning_rate = config.learning_rate;
         training_sets = config.training_sets;
+		
+		//length of each PLM
+		len_weights1 = input_dimension * nodes_per_layer;
+		len_weights2 = nodes_per_layer * nodes_per_layer;
+		len_weights3 = nodes_per_layer * possible_outputs;
+		len_biases1 = nodes_per_layer;
+		len_biases2 = nodes_per_layer;	
+		len_biases3 = possible_outputs;
+		len_training_data = training_sets * input_dimension;
+		len_training_targets = training_sets * possible_outputs;	
     }
 
     // Store
+	/* Default Store
     {
         HLS_PROTO("store-dma");
         wait();
@@ -258,7 +512,216 @@ void kprop::store_output()
             }
         }
     }
+	*/
+    // New Store
+	{
+        HLS_PROTO("store-dma");
+        wait();
 
+        bool ping = true;
+#if (DMA_WORD_PER_BEAT == 0)
+        uint32_t store_offset = (input_dimension * nodes_per_layer + nodes_per_layer * nodes_per_layer + nodes_per_layer * possible_outputs + nodes_per_layer + nodes_per_layer + possible_outputs + training_sets * input_dimension + training_sets * possible_outputs) * 1;
+#else
+        uint32_t store_offset = round_up(input_dimension * nodes_per_layer + nodes_per_layer * nodes_per_layer + nodes_per_layer * possible_outputs + nodes_per_layer + nodes_per_layer + possible_outputs + training_sets * input_dimension + training_sets * possible_outputs, DMA_WORD_PER_BEAT) * 1;
+#endif
+        uint32_t offset = store_offset;
+
+        wait();
+		
+		// store weights1 values		
+		this->store_compute_handshake();
+		{
+			HLS_PROTO("store-dma");
+			
+			dma_info_t dma_info(offset, len_weights1, DMA_SIZE);
+			offset += len_weights1;
+			this->dma_write_ctrl.put(dma_info);	
+		}
+		
+		for (uint16_t i = 0; i < len_weights1; i++)
+		{
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			// Read from PLM
+			wait();
+			if (ping)
+				dataBv = plm_weights1_ping[i];
+			else
+				dataBv = plm_weights1_pong[i];
+			
+			wait();			
+			this->dma_write_chnl.put(dataBv);
+		}
+
+		// store weights2 values		
+		this->store_compute_handshake();
+		{
+			HLS_PROTO("store-dma");
+			
+			dma_info_t dma_info(offset, len_weights2, DMA_SIZE);
+			offset += len_weights2;
+			this->dma_write_ctrl.put(dma_info);	
+		}
+		
+		for (uint16_t i = 0; i < len_weights2; i++)
+		{
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			// Read from PLM
+			wait();
+			if (ping)
+				dataBv = plm_weights2_ping[i];
+			else
+				dataBv = plm_weights2_pong[i];
+			
+			wait();			
+			this->dma_write_chnl.put(dataBv);
+		}
+		
+		// store weights3 values		
+		this->store_compute_handshake();
+		{
+			HLS_PROTO("store-dma");
+			
+			dma_info_t dma_info(offset, len_weights3, DMA_SIZE);
+			offset += len_weights3;
+			this->dma_write_ctrl.put(dma_info);	
+		}
+		
+		for (uint16_t i = 0; i < len_weights3; i++)
+		{
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			// Read from PLM
+			wait();
+			if (ping)
+				dataBv = plm_weights3_ping[i];
+			else
+				dataBv = plm_weights3_pong[i];
+			
+			wait();			
+			this->dma_write_chnl.put(dataBv);
+		}	
+
+		// store biases1 values		
+		this->store_compute_handshake();
+		{
+			HLS_PROTO("store-dma");
+			
+			dma_info_t dma_info(offset, len_biases1, DMA_SIZE);
+			offset += len_biases1;
+			this->dma_write_ctrl.put(dma_info);	
+		}
+		
+		for (uint16_t i = 0; i < len_biases1; i++)
+		{
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			// Read from PLM
+			wait();
+			if (ping)
+				dataBv = plm_biases1_ping[i];
+			else
+				dataBv = plm_biases1_pong[i];
+			
+			wait();			
+			this->dma_write_chnl.put(dataBv);
+		}	
+
+		// store biases2 values		
+		this->store_compute_handshake();
+		{
+			HLS_PROTO("store-dma");
+			
+			dma_info_t dma_info(offset, len_biases2, DMA_SIZE);
+			offset += len_biases2;
+			this->dma_write_ctrl.put(dma_info);	
+		}
+		
+		for (uint16_t i = 0; i < len_biases2; i++)
+		{
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			// Read from PLM
+			wait();
+			if (ping)
+				dataBv = plm_biases2_ping[i];
+			else
+				dataBv = plm_biases2_pong[i];
+			
+			wait();			
+			this->dma_write_chnl.put(dataBv);
+		}	
+
+		// store biases3 values		
+		this->store_compute_handshake();
+		{
+			HLS_PROTO("store-dma");
+			
+			dma_info_t dma_info(offset, len_biases3, DMA_SIZE);
+			offset += len_biases3;
+			this->dma_write_ctrl.put(dma_info);	
+		}
+		
+		for (uint16_t i = 0; i < len_biases3; i++)
+		{
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			// Read from PLM
+			wait();
+			if (ping)
+				dataBv = plm_biases3_ping[i];
+			else
+				dataBv = plm_biases3_pong[i];
+			
+			wait();			
+			this->dma_write_chnl.put(dataBv);
+		}	
+
+		// store training data		
+		this->store_compute_handshake();
+		{
+			HLS_PROTO("store-dma");
+			
+			dma_info_t dma_info(offset, len_training_data, DMA_SIZE);
+			offset += len_training_data;
+			this->dma_write_ctrl.put(dma_info);	
+		}
+		
+		for (uint16_t i = 0; i < len_training_data; i++)
+		{
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			// Read from PLM
+			wait();
+			if (ping)
+				dataBv = plm_training_data_ping[i];
+			else
+				dataBv = plm_training_data_pong[i];
+			
+			wait();			
+			this->dma_write_chnl.put(dataBv);
+		}	
+
+		// store training targets
+		this->store_compute_handshake();
+		{
+			HLS_PROTO("store-dma");
+			
+			dma_info_t dma_info(offset, len_training_targets, DMA_SIZE);
+			offset += len_training_targets;
+			this->dma_write_ctrl.put(dma_info);	
+		}
+		
+		for (uint16_t i = 0; i < len_training_targets; i++)
+		{
+			sc_dt::sc_bv<DMA_WIDTH> dataBv;
+			// Read from PLM
+			wait();
+			if (ping)
+				dataBv = plm_training_targets_ping[i];
+			else
+				dataBv = plm_training_targets_pong[i];
+			
+			wait();			
+			this->dma_write_chnl.put(dataBv);
+		}		
+
+		ping = !ping;
+    }
     // Conclude
     {
         this->accelerator_done();

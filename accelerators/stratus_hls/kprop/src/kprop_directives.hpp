@@ -14,6 +14,14 @@
 #define DMA_WORD_PER_BEAT 1
 #define PLM_IN_NAME "kprop_plm_block_in_dma64"
 #define PLM_OUT_NAME "kprop_plm_block_out_dma64"
+#define PLM_WEIGHTS1_NAME "kprop_plm_weights1_dma64"
+#define PLM_WEIGHTS2_NAME "kprop_plm_weights2_dma64"
+#define PLM_WEIGHTS3_NAME "kprop_plm_weights3_dma64"
+#define PLM_BIASES1_NAME "kprop_plm_biases1_dma64"
+#define PLM_BIASES2_NAME "kprop_plm_biases2_dma64"
+#define PLM_BIASES3_NAME "kprop_plm_biases3_dma64"
+#define PLM_TRAINING_DATA_NAME "kprop_plm_training_data_dma64"
+#define PLM_TRAINING_TARGETS_NAME "kprop_plm_training_targets_dma64"
 #endif
 
 
