@@ -770,34 +770,97 @@ void kprop::compute_kernel()
 
     // Compute
     bool ping = true;
+	// intermediate results
+	int32_t i,j;
+    //Forward and training structures
+    FPDATA_WORD activations1[nodes_per_layer];
+    FPDATA_WORD activations2[nodes_per_layer];
+    FPDATA_WORD activations3[possible_outputs];
+    FPDATA_WORD dactivations1[nodes_per_layer];
+    FPDATA_WORD dactivations2[nodes_per_layer];
+    FPDATA_WORD dactivations3[possible_outputs];
+    FPDATA_WORD net_outputs[possible_outputs];
+    //Training structure
+    FPDATA_WORD output_difference[possible_outputs];
+    FPDATA_WORD delta_weights1[input_dimension*nodes_per_layer]; 
+    FPDATA_WORD delta_weights2[nodes_per_layer*nodes_per_layer];
+    FPDATA_WORD delta_weights3[nodes_per_layer*possible_outputs];
+    FPDATA_WORD oracle_activations1[nodes_per_layer];
+    FPDATA_WORD oracle_activations2[nodes_per_layer];
+	// Computing phase implementation
     {
-        for (uint16_t b = 0; b < 1; b++)
-        {
-            uint32_t in_length = input_dimension * nodes_per_layer + nodes_per_layer * nodes_per_layer + nodes_per_layer * possible_outputs + nodes_per_layer + nodes_per_layer + possible_outputs + training_sets * input_dimension + training_sets * possible_outputs;
-            uint32_t out_length = input_dimension * nodes_per_layer + nodes_per_layer * nodes_per_layer + nodes_per_layer * possible_outputs + nodes_per_layer + nodes_per_layer + possible_outputs + training_sets * input_dimension + training_sets * possible_outputs;
-            int out_rem = out_length;
+		for(i=0; i<training_sets; i++)
+		{
+			this->compute_load_handshake();
+			for(j=0;j<nodes_per_layer;j++)
+			{
+				activations1[j] = (FPDATA)0.0;
+				activations2[j] = (FPDATA)0.0;
+				if(j<possible_outputs)
+				{
+				   activations3[j] = (FPDATA)0.0;
+				}
+			}
+			
+			// only read from PLMs and update intermediate results defined above
+			if (ping){
+				matrix_vector_product_with_bias_input_layer(plm_biases1_ping, plm_weights1_ping, activations1, &plm_training_data_ping[i*input_dimension]);
+			}else{
+				matrix_vector_product_with_bias_input_layer(plm_biases1_pong, plm_weights1_pong, activations1, &plm_training_data_pong[i*input_dimension]);
+			}
+			RELU(activations1, dactivations1, nodes_per_layer);
+			if (ping){
+				matrix_vector_product_with_bias_second_layer(plm_biases2_ping, plm_weights2_ping, activations2, activations1);
+			}else{
+				matrix_vector_product_with_bias_second_layer(plm_biases2_pong, plm_weights2_pong, activations2, activations1);
+			}
+			RELU(activations2, dactivations2, nodes_per_layer);
+			if (ping){
+				matrix_vector_product_with_bias_output_layer(plm_biases3_ping, plm_weights3_ping, activations3, activations2);
+			}else{
+				matrix_vector_product_with_bias_output_layer(plm_biases3_pong, plm_weights3_pong, activations3, activations2);
+			}
+			RELU(activations3, dactivations3, possible_outputs);
+			soft_max(net_outputs, activations3);
+			take_difference(net_outputs, &training_targets[i*possible_outputs], output_difference, dactivations3);
+			get_delta_matrix_weights3(delta_weights3, output_difference, activations2);
+			if (ping){
+				get_oracle_activations2(plm_weights3_ping, output_difference, oracle_activations2, dactivations2);
+			}else{
+				get_oracle_activations2(plm_weights3_pong, output_difference, oracle_activations2, dactivations2);
+			}
+			get_delta_matrix_weights2(delta_weights2, oracle_activations2, activations1);
+			if (ping){
+				get_oracle_activations1(plm_weights2_ping, oracle_activations2, oracle_activations1, dactivations1);
+			}else{
+				get_oracle_activations1(plm_weights2_pong, oracle_activations2, oracle_activations1, dactivations1);
+			}
+			if (ping){
+				get_delta_matrix_weights1(delta_weights1, oracle_activations1, &plm_training_data_ping[i*input_dimension]);
+			}else{
+				get_delta_matrix_weights1(delta_weights1, oracle_activations1, &plm_training_data_pong[i*input_dimension]);
+			}
+			
+			//update parameters (write to PLMs)
+			if (ping){
+				update_weights(plm_weights1_ping, plm_weights2_ping, plm_weights3_ping, delta_weights1, delta_weights2, delta_weights3, 
+                       plm_biases1_ping, plm_biases2_ping, plm_biases3_ping, oracle_activations1, oracle_activations2, output_difference);
+			}else{
+				update_weights(plm_weights1_pong, plm_weights2_pong, plm_weights1_pong, delta_weights1, delta_weights2, delta_weights3, 
+                       plm_biases1_pong, plm_biases2_pong, plm_biases3_pong, oracle_activations1, oracle_activations2, output_difference);
+			}		   
+						
+			/* default compute
+			for (int i = 0; i < in_len; i++) {
+				if (ping)
+					plm_out_ping[i] = plm_in_ping[i];
+				else
+					plm_out_pong[i] = plm_in_pong[i];
+			} */
 
-            for (int in_rem = in_length; in_rem > 0; in_rem -= PLM_IN_WORD)
-            {
-
-                uint32_t in_len  = in_rem  > PLM_IN_WORD  ? PLM_IN_WORD  : in_rem;
-                uint32_t out_len = out_rem > PLM_OUT_WORD ? PLM_OUT_WORD : out_rem;
-
-                this->compute_load_handshake();
-
-                // Computing phase implementation
-                for (int i = 0; i < in_len; i++) {
-                    if (ping)
-                        plm_out_ping[i] = plm_in_ping[i];
-                    else
-                        plm_out_pong[i] = plm_in_pong[i];
-                }
-
-                out_rem -= PLM_OUT_WORD;
-                this->compute_store_handshake();
-                ping = !ping;
-            }
-        }
+			this->compute_store_handshake();
+			ping = !ping;
+		}
 
         // Conclude
         {
