@@ -1,16 +1,30 @@
 //the implementation of the backprop function and the helping function of backprop function that used
 #include "backprop.h"
 
+TYPE exp_taylor(TYPE x){          //an approximation exp(x)
+	TYPE result = 0.0;
+	if(x <= 0.0){
+		x *= -1;
+		result = (1 + x);
+		return 1.0 / result;
+	}else{
+		result = (1 + x);
+		return result;
+	}
+}
+
 void soft_max(TYPE net_outputs[possible_outputs], TYPE activations[possible_outputs]) {
     int i;
     TYPE sum;
     sum = (TYPE) 0.0;
 
     for(i=0; i < possible_outputs; i++) {
-        sum += exp(-activations[i]);
+        //sum += exp(-activations[i]);
+        sum += exp_taylor(-activations[i]);
     }
     for(i=0; i < possible_outputs; i++) {
-        net_outputs[i] = exp(-activations[i])/sum;
+        //net_outputs[i] = exp(-activations[i])/sum;
+        net_outputs[i] = exp_taylor(-activations[i])/sum;
     }
 }
 
@@ -18,7 +32,8 @@ void RELU(TYPE activations[nodes_per_layer], TYPE dactivations[nodes_per_layer],
     int i;
     for( i = 0; i < size; i++) {
         dactivations[i] = activations[i]*(1.0-activations[i]);
-        activations[i] = 1.0/(1.0+exp(-activations[i]));
+        //activations[i] = 1.0/(1.0+exp(-activations[i]));
+        activations[i] = 1.0/(1.0+exp_taylor(-activations[i]));
     }
 }
 
@@ -277,6 +292,7 @@ void backprop(TYPE weights1[input_dimension*nodes_per_layer],
         matrix_vector_product_with_bias_output_layer(biases3, weights3, activations3, activations2);
         RELU(activations3, dactivations3, possible_outputs);
         soft_max(net_outputs, activations3);
+
         take_difference(net_outputs, &training_targets[i*possible_outputs], output_difference, dactivations3);
         get_delta_matrix_weights3(delta_weights3, output_difference, activations2);
         get_oracle_activations2(weights3, output_difference, oracle_activations2, dactivations2);
@@ -285,5 +301,8 @@ void backprop(TYPE weights1[input_dimension*nodes_per_layer],
         get_delta_matrix_weights1(delta_weights1, oracle_activations1, &training_data[i*input_dimension]);
         update_weights(weights1, weights2, weights3, delta_weights1, delta_weights2, delta_weights3, 
                        biases1, biases2, biases3, oracle_activations1, oracle_activations2, output_difference);
+		
+
+
     }
 }

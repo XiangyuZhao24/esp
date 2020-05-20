@@ -20,8 +20,11 @@ const size_t MEM_SIZE = 125744 / (DMA_WIDTH/8);
 #endif
 
 //input file and check file
-#define IN_FILE "./data/input.data"
-#define CHK_FILE "./data/check.data"
+#define IN_FILE "../tb/data/input.data"
+#define CHK_FILE "../tb/data/check.data"
+#define threshold 0.01
+#define absolute_threshold 0.001
+//#define CHK_FILE "../tb/data/output.data.single"
 
 class system_t : public esp_system<DMA_WIDTH, MEM_SIZE>
 {
@@ -61,7 +64,6 @@ public:
         input_dimension = 13;
         nodes_per_layer = 64;
         possible_outputs = 3;
-        learning_rate = 0.01;
         training_sets = 163;
     }
 
@@ -84,16 +86,15 @@ public:
     int32_t input_dimension;
     int32_t nodes_per_layer;
     int32_t possible_outputs;
-    int32_t learning_rate;
     int32_t training_sets;
 
     uint32_t in_words_adj;
     uint32_t out_words_adj;
     uint32_t in_size;
     uint32_t out_size;
-    int64_t *in;
-    int64_t *out;
-    int64_t *gold;
+    float *in;
+    float *out;
+    float *gold;
 
     // Other Functions
 	//Memory position

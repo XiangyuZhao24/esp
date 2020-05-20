@@ -4,6 +4,7 @@
 #ifndef __KPROP_DIRECTIVES_HPP__
 #define __KPROP_DIRECTIVES_HPP__
 
+
 #if (DMA_WIDTH == 32)
 #define DMA_BEAT_PER_WORD 2
 #define DMA_WORD_PER_BEAT 0
@@ -12,21 +13,18 @@
 #elif (DMA_WIDTH == 64)
 #define DMA_BEAT_PER_WORD 1
 #define DMA_WORD_PER_BEAT 1
-#define PLM_IN_NAME "kprop_plm_block_in_dma64"
-#define PLM_OUT_NAME "kprop_plm_block_out_dma64"
-#define PLM_WEIGHTS1_NAME "kprop_plm_weights1_dma64"
-#define PLM_WEIGHTS2_NAME "kprop_plm_weights2_dma64"
-#define PLM_WEIGHTS3_NAME "kprop_plm_weights3_dma64"
-#define PLM_BIASES1_NAME "kprop_plm_biases1_dma64"
-#define PLM_BIASES2_NAME "kprop_plm_biases2_dma64"
-#define PLM_BIASES3_NAME "kprop_plm_biases3_dma64"
-#define PLM_TRAINING_DATA_NAME "kprop_plm_training_data_dma64"
-#define PLM_TRAINING_TARGETS_NAME "kprop_plm_training_targets_dma64"
+#define PLM_WEIGHTS1_NAME "kprop_plm_block_weights1_dma64"
+#define PLM_WEIGHTS2_NAME "kprop_plm_block_weights2_dma64"
+#define PLM_WEIGHTS3_NAME "kprop_plm_block_weights3_dma64"
+#define PLM_BIASES1_NAME "kprop_plm_block_biases1_dma64"
+#define PLM_BIASES2_NAME "kprop_plm_block_biases2_dma64"
+#define PLM_BIASES3_NAME "kprop_plm_block_biases3_dma64"
+#define PLM_TRAINING_DATA_NAME "kprop_plm_block_training_data_dma64"
+#define PLM_TRAINING_TARGETS_NAME "kprop_plm_block_training_targets_dma64"
 #endif
 
-
-#if defined(STRATUS_HLS)
-
+#if defined(STRATUS_HLS)	
+	
 #define HLS_MAP_plm(_mem, _plm_block_name)      \
     HLS_MAP_TO_MEMORY(_mem, _plm_block_name)
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <fstream>
+#include <cmath>
 #include <iostream>
 #include <sstream>
 #include "system.hpp"
@@ -28,7 +29,6 @@ void system_t::config_proc()
         config.input_dimension = input_dimension;
         config.nodes_per_layer = nodes_per_layer;
         config.possible_outputs = possible_outputs;
-        config.learning_rate = learning_rate;
         config.training_sets = training_sets;
 
         wait(); conf_info.write(config);
@@ -77,6 +77,10 @@ void system_t::config_proc()
 // Functions
 void system_t::load_memory()
 {
+	int i = 0;
+	FILE *fp = NULL;
+	FILE *fp_gold = NULL;
+	char *str_tmp[4];
     // Optional usage check
 #ifdef CADENCE
     if (esc_argc() != 1)
@@ -107,8 +111,8 @@ void system_t::load_memory()
     //  ===========================  v
 	
     // Input data and golden output (aligned to DMA_WIDTH makes your life easier)
-	fp = fopen(IN_FILE, "r")
-	fp_gold = fopen(CHK_FILE, "r")
+	fp = fopen(IN_FILE, "r");
+	fp_gold = fopen(CHK_FILE, "r");
     if (!fp) {
     	ESP_REPORT_INFO("cannot open input file.");
     	return;
@@ -126,7 +130,7 @@ void system_t::load_memory()
     biases2_addr = biases1_addr + nodes_per_layer;	
     biases3_addr = biases2_addr + nodes_per_layer;	
     training_data_addr = biases3_addr + possible_outputs;	
-    training_targets_addr = training_data_addr + training_sets * possible_outputs;		
+    training_targets_addr = training_data_addr + training_sets * input_dimension;		
 	
 	
 	
@@ -180,7 +184,7 @@ void system_t::load_memory()
     //biases1
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
-    for (; i < biases1_addr; i++) {
+    for (; i < biases2_addr; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
 		in[i] = val;
@@ -191,7 +195,7 @@ void system_t::load_memory()
     //biases2
     fscanf(fp, "%s\n", str_tmp); // Read separator line: %%
     fscanf(fp_gold, "%s\n", str_tmp);
-    for (; i < biases2_addr; i++) {
+    for (; i < biases3_addr; i++) {
     	float val;
     	fscanf(fp, "%f\n", &val);
 		in[i] = val;
@@ -232,23 +236,6 @@ void system_t::load_memory()
 		fscanf(fp_gold, "%f\n", &val);
     	gold[i] = val;    	
     }
-/*
-    // Memory initialization:
-#if (DMA_WORD_PER_BEAT == 0)
-    for (int i = 0; i < in_size; i++)  {
-        sc_dt::sc_bv<DATA_WIDTH> data_bv(in[i]);
-        for (int j = 0; j < DMA_BEAT_PER_WORD; j++)
-            mem[DMA_BEAT_PER_WORD * i + j] = data_bv.range((j + 1) * DMA_WIDTH - 1, j * DMA_WIDTH);
-    }
-#else
-    for (int i = 0; i < in_size / DMA_WORD_PER_BEAT; i++)  {
-        sc_dt::sc_bv<DMA_WIDTH> data_bv(in[i]);
-        for (int j = 0; j < DMA_WORD_PER_BEAT; j++)
-            data_bv.range((j+1) * DATA_WIDTH - 1, j * DATA_WIDTH) = in[i * DMA_WORD_PER_BEAT + j];
-        mem[i] = data_bv;
-    }
-#endif
-*/
 
     ESP_REPORT_INFO("load memory completed");
 }
@@ -258,6 +245,7 @@ void system_t::dump_memory()
     // Get results from memory
     out = new float[out_size];
     uint32_t offset = in_size;
+
 
 #if (DMA_WORD_PER_BEAT == 0)
     offset = offset * DMA_BEAT_PER_WORD;
@@ -271,11 +259,14 @@ void system_t::dump_memory()
     }
 #else
     offset = offset / DMA_WORD_PER_BEAT;
-    for (int i = 0; i < out_size / DMA_WORD_PER_BEAT; i++)
-        for (int j = 0; j < DMA_WORD_PER_BEAT; j++)
+    for (int i = 0; i < out_size / DMA_WORD_PER_BEAT; i++){
+        for (int j = 0; j < DMA_WORD_PER_BEAT; j++){
             FPDATA out_fx = bv2fp<FPDATA, WORD_SIZE>(mem[offset + i].range((j + 1) * DATA_WIDTH - 1, j * DATA_WIDTH));
 			out[i * DMA_WORD_PER_BEAT + j] = (float) out_fx;
+		}
+	}
 #endif
+
 
     ESP_REPORT_INFO("dump memory completed");
 }
@@ -284,12 +275,15 @@ int system_t::validate()
 {
     // Check for mismatches
     uint32_t errors = 0;
+	float diff = 0;
 
-    for (int i = 0; i < 1; i++)
-        for (int j = 0; j < input_dimension * nodes_per_layer + nodes_per_layer * nodes_per_layer + nodes_per_layer * possible_outputs + nodes_per_layer + nodes_per_layer + possible_outputs + training_sets * input_dimension + training_sets * possible_outputs; j++)
-            if (gold[i * out_words_adj + j] != out[i * out_words_adj + j])
+    for (int i = 0; i < 1; i++){
+        for (int j = 0; j < input_dimension * nodes_per_layer + nodes_per_layer * nodes_per_layer + nodes_per_layer * possible_outputs + nodes_per_layer + nodes_per_layer + possible_outputs + training_sets * input_dimension + training_sets * possible_outputs; j++){
+			diff = fabs(gold[i * out_words_adj + j] - out[i * out_words_adj + j]);
+			if ((diff > absolute_threshold) && ((diff / gold[i * out_words_adj + j]) > threshold))
                 errors++;
-
+		}
+	}
     delete [] in;
     delete [] out;
     delete [] gold;

@@ -13,6 +13,7 @@
 
 #include "cynw_fixed.h"
 
+#define FX_WIDTH 64  //move from kprop.hpp
 // Data types
 
 const unsigned int WORD_SIZE = FX_WIDTH;
@@ -20,9 +21,11 @@ const unsigned int WORD_SIZE = FX_WIDTH;
 const unsigned int FPDATA_WL = FX_WIDTH;
 
 #if (FX_WIDTH==64)
-const unsigned int FPDATA_IL = FX64_IL;
+//const unsigned int FPDATA_IL = FX64_IL;
+const unsigned int FPDATA_IL = 48;
 #elif (FX_WIDTH==32)
-const unsigned int FPDATA_IL = FX32_IL;
+//const unsigned int FPDATA_IL = FX32_IL;
+const unsigned int FPDATA_IL = 16;
 #endif // FX_WIDTH
 
 const unsigned int FPDATA_PL = (FPDATA_WL - FPDATA_IL);
@@ -31,22 +34,6 @@ const unsigned int FPDATA_PL = (FPDATA_WL - FPDATA_IL);
 typedef sc_dt::sc_int<WORD_SIZE> FPDATA_WORD;
 
 typedef cynw_fixed<FPDATA_WL, FPDATA_IL, SC_RND> FPDATA;
-
-class CompNum { // a complex number
-public:
-    FPDATA re;   // the real part
-    FPDATA im;   // the imaginary part
-
-    CompNum() {
-        re = 0;
-        im = 0;
-    }
-
-    CompNum(FPDATA real, FPDATA imaginary) {
-        re = real;
-        im = imaginary;
-    }
-};
 
 
 // Helper functions
